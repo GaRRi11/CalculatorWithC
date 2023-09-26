@@ -1,5 +1,7 @@
+using System.Configuration;
 using System.Diagnostics;
 using System.Drawing;
+using System.Windows.Forms;
 
 namespace CalculatorWithC_
 {
@@ -12,6 +14,7 @@ namespace CalculatorWithC_
             textBox1.ReadOnly = true;
         }
 
+
         private void Form1_Load(object sender, EventArgs e)
         {
         }
@@ -22,22 +25,10 @@ namespace CalculatorWithC_
 
 
 
-        private double currentInput = 0;
         private string currentOperator = "";
         private Calculator calculator = new Calculator();
 
-        private Button FindButtonByText(string buttonText)
-        {
-            foreach (Control control in Controls)
-            {
-                if (control is Button button && button.Text == buttonText)
-                {
-                    return button;
-                }
-            }
 
-            return null;
-        }
 
         private void DigitButton_Click(object sender, EventArgs e)
         {
@@ -45,26 +36,25 @@ namespace CalculatorWithC_
             {
                 if (int.TryParse(button.Text, out int digit))
                 {
-                    Button foundButton = FindButtonByText(currentOperator);
-                    if (foundButton != null)
-                    {
-                        foundButton.BackColor = Color.White;
-                    }
+                    ResetColor();
                     textBox1.Text += button.Text;
                 }
             }
 
         }
+
         private void OperatorButton_Click(object sender, EventArgs e)
         {
             if (sender is Button button)
             {
                 if (double.TryParse(textBox1.Text, out double input))
                 {
-                    Color buttonCollor = Properties.Settings.Default.ButtonColor;
-                    button.BackColor = buttonCollor;
-                    currentInput = input;
+
+                    ResetColor();
+                    button.BackColor = getColorFromProperties();
                     currentOperator = button.Text;
+                    calculator.AddNumber(input);
+                    calculator.AddOperator(currentOperator);
                     textBox1.Clear();
                 }
             }
@@ -74,14 +64,16 @@ namespace CalculatorWithC_
         {
             if (double.TryParse(textBox1.Text, out double input))
             {
-
-                currentInput = calculator.giveResult(currentInput, input, currentOperator);
-                textBox1.Text = currentInput.ToString();
+                calculator.AddNumber(input);
+                double result = calculator.giveResult();
+                textBox1.Text = result.ToString();
             }
         }
 
         private void ClearButton_Click(object sender, EventArgs e)
         {
+            ResetColor();
+            calculator.clear();
             textBox1.Clear();
         }
 
@@ -107,9 +99,27 @@ namespace CalculatorWithC_
 
         private void DotButton_Click(object sender, EventArgs e)
         {
-            textBox1.Text += ".";
+            if (!textBox1.Text.Contains("."))
+            {
+                textBox1.Text += ".";
+            }
         }
 
-       
+        private void ResetColor()
+        {
+            foreach (Control control in Controls)
+            {
+                if (control is Button button)
+                {
+                    button.BackColor = Color.White;
+                }
+            }
+        }
+
+        private Color getColorFromProperties()
+        {
+            return Properties.Settings.Default.ButtonColor;
+
+        }
     }
 }

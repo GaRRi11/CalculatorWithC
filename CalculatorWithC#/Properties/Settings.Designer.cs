@@ -25,7 +25,7 @@ namespace CalculatorWithC_.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Red")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Purple")]
         public global::System.Drawing.Color ButtonColor {
             get {
                 return ((global::System.Drawing.Color)(this["ButtonColor"]));
