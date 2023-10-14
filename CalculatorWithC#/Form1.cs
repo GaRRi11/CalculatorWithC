@@ -2,6 +2,7 @@ using System.Configuration;
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Xml;
 
 namespace CalculatorWithC_
 {
@@ -118,7 +119,36 @@ namespace CalculatorWithC_
 
         private Color getColorFromProperties()
         {
-            return Properties.Settings.Default.ButtonColor;
+
+            Color color;
+
+            string appConfigFilePath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "appconfig.xml");
+
+            XmlDocument doc = new XmlDocument();
+            doc.Load(appConfigFilePath);
+
+            string xpath = "/configuration/appSettings/add[@key='ButtonColor']";
+
+            XmlNode node = doc.SelectSingleNode(xpath);
+
+            string buttonColor = node.Attributes["value"].Value;
+
+            if (string.IsNullOrEmpty(buttonColor))
+            {
+                return Color.Black;
+            }
+            else {
+                if (Enum.TryParse(buttonColor, true, out KnownColor knownColor))
+                {
+                    color = Color.FromKnownColor(knownColor);
+                }
+                else
+                {
+                    color = Color.Black;
+                }
+            }
+
+            return color;
 
         }
     }
